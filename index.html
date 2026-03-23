@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio | AI Strategist · UX/UI · Marketing</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0a0a;
+            --surface: #141414;
+            --surface-hover: #1c1c1c;
+            --accent: #00f5ff; /* Electric Cyan */
+            --accent-soft: rgba(0, 245, 255, 0.1);
+            --text-main: #f0f0f0;
+            --text-muted: #888888;
+            --text-dim: #444444;
+            --font-display: 'Cormorant Garamond', serif;
+            --font-body: 'Outfit', sans-serif;
+            --transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+            --container-padding: 8vw;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            background-color: var(--bg);
+            color: var(--text-main);
+            font-family: var(--font-body);
+            overflow-x: hidden;
+        }
+
+        body {
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Grain Texture */
+        .noise {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            opacity: 0.05;
+            z-index: 9999;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        h1, h2, h3 {
+            font-family: var(--font-display);
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+            transition: var(--transition);
+        }
+
+        ul {
+            list-style: none;
+        }
+
+        .container {
+            padding: 0 var(--container-padding);
+            max-width: 1800px;
+            margin: 0 auto;
+        }
+
+        section {
+            padding: 160px 0;
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 1s ease, transform 1s ease;
+        }
+
+        section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* --- HERO --- */
+        .hero {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            padding-bottom: 0;
+        }
+
+        /* Hero Video Placeholder */
+        .hero-video {
+            position: absolute;
+            inset: 0;
+            z-index: -2;
+            overflow: hidden;
+        }
+
+        .video-overlay {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at center, transparent 0%, var(--bg) 90%);
+            z-index: 1;
+        }
+
+        .video-placeholder {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, #050505, #0a0a0a);
+            position: relative;
+        }
+
+        .video-placeholder::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at center, var(--accent-soft) 0%, transparent 60%);
+            animation: rotateBg 15s linear infinite;
+            opacity: 0.2;
+        }
+
+        @keyframes rotateBg {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .hero-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: 
+                radial-gradient(circle at 70% 30%, var(--accent-soft) 0%, transparent 50%),
+                radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.02) 0%, transparent 40%);
+            animation: meshMove 20s ease-in-out infinite alternate;
+        }
+
+        @keyframes meshMove {
+            0% { transform: scale(1) translate(0, 0); }
+            50% { transform: scale(1.1) translate(-2%, 2%); }
+            100% { transform: scale(1) translate(1%, -1%); }
+        }
+
+        .hero-name {
+            font-size: clamp(4rem, 12vw, 10rem);
+            line-height: 0.9;
+            margin-bottom: 2rem;
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 1s cubic-bezier(0.23, 1, 0.32, 1), transform 1s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .hero-title {
+            font-family: var(--font-body);
+            font-size: clamp(0.9rem, 1.5vw, 1.1rem);
+            font-weight: 300;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.4em;
+            margin-bottom: 2.5rem;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        .hero-statement {
+            max-width: 600px;
+            font-size: 1.25rem;
+            color: var(--text-muted);
+            margin-bottom: 3.5rem;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        .hero-ctas {
+            display: flex;
+            gap: 2rem;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        .btn {
+            padding: 1rem 2.5rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-size: 0.8rem;
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background-color: var(--accent);
+            color: var(--bg);
+        }
+
+        .btn-primary:hover {
+            background-color: #ffffff;
+        }
+
+        .btn-outline {
+            border: 1px solid var(--text-dim);
+            color: var(--text-main);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        /* --- EXPERTISE --- */
+        .section-header {
+            margin-bottom: 80px;
+        }
+
+        .section-number {
+            font-family: var(--font-body);
+            font-weight: 600;
+            color: var(--accent);
+            display: block;
+            margin-bottom: 1rem;
+        }
+
+        .section-title {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+        }
+
+        .expertise-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .expertise-card {
+            background: var(--surface);
+            padding: 3rem;
+            border-radius: 4px;
+            transition: var(--transition);
+            border: 1px solid rgba(255,255,255,0.03);
+            position: relative;
+        }
+
+        .expertise-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--accent-soft);
+            background: var(--surface-hover);
+        }
+
+        .card-icon {
+            color: var(--accent);
+            margin-bottom: 1.5rem;
+            display: block;
+        }
+
+        .card-title {
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-list li {
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+            position: relative;
+            padding-left: 1.5rem;
+            font-size: 0.95rem;
+        }
+
+        .card-list li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: var(--accent);
+        }
+
+        /* --- PROJECTS --- */
+        .project-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 4rem 2rem;
+        }
+
+        .project-card {
+            grid-column: span 6;
+            position: relative;
+        }
+
+        .project-card:nth-child(even) {
+            margin-top: 100px;
+        }
+
+        .project-card.large {
+            grid-column: span 8;
+        }
+
+        .project-card.small {
+            grid-column: span 4;
+        }
+
+        .project-thumb {
+            width: 100%;
+            aspect-ratio: 16/10;
+            background: var(--surface);
+            margin-bottom: 1.5rem;
+            position: relative;
+            overflow: hidden;
+            border-radius: 2px;
+        }
+
+        /* Abstract visuals */
+        .thumb-ai { 
+            background: linear-gradient(45deg, #0a0a0a, #00f5ff11); 
+            background-image: 
+                radial-gradient(circle at 30% 20%, var(--accent-soft) 0%, transparent 40%),
+                radial-gradient(circle at 70% 80%, rgba(255,255,255,0.03) 0%, transparent 40%);
+        }
+        .thumb-ux { 
+            background: linear-gradient(135deg, #0a0a0a, #00f5ff08); 
+            background-image: 
+                radial-gradient(circle at 50% 50%, var(--accent-soft) 0%, transparent 60%),
+                repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,0.01) 10px, rgba(255,255,255,0.01) 11px);
+        }
+        .thumb-marketing { 
+            background: linear-gradient(225deg, #0a0a0a, #00f5ff11); 
+            background-image: 
+                radial-gradient(circle at 80% 20%, var(--accent-soft) 0%, transparent 50%),
+                linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-size: 100% 100%, 20px 20px, 20px 20px;
+        }
+
+        .thumb-overlay {
+            position: absolute;
+            inset: 0;
+            padding: 2rem;
+            display: flex;
+            align-items: flex-end;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .project-card:hover .thumb-overlay {
+            opacity: 1;
+        }
+
+        .project-name {
+            font-size: 1.75rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .project-desc {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .project-tags {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .tag {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--accent);
+            border: 1px solid var(--accent-soft);
+            padding: 0.2rem 0.6rem;
+        }
+
+        /* --- ABOUT --- */
+        .about-content {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 6vw;
+            align-items: center;
+        }
+
+        .about-visual {
+            aspect-ratio: 1;
+            background: var(--surface);
+            border-radius: 50%;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid var(--accent-soft);
+        }
+
+        .avatar-abstract {
+           width: 100%;
+           height: 100%;
+           background: radial-gradient(circle at center, var(--accent-soft) 0%, transparent 70%);
+           display: flex;
+           align-items: center;
+           justify-content: center;
+        }
+
+        .avatar-circle {
+            width: 60%;
+            height: 60%;
+            border: 1px solid var(--accent);
+            border-radius: 50%;
+            opacity: 0.3;
+        }
+
+        .bio-text {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            margin-bottom: 3rem;
+        }
+
+        .tools-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .tool-pill {
+            background: var(--surface);
+            padding: 0.5rem 1.2rem;
+            border-radius: 100px;
+            font-size: 0.85rem;
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: var(--transition);
+        }
+
+        .tool-pill:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        /* --- CONTACT --- */
+        .contact {
+            text-align: center;
+        }
+
+        .contact-invitation {
+            font-size: 1.5rem;
+            color: var(--text-muted);
+            margin-bottom: 4rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .contact-links {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            flex-wrap: wrap;
+        }
+
+        .contact-link {
+            font-size: 1.1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .contact-link:hover {
+            color: var(--accent);
+        }
+
+        footer {
+            padding: 60px 0;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 1024px) {
+            .about-content { grid-template-columns: 1fr; }
+            .project-card { grid-column: span 12 !important; margin-top: 0 !important; }
+        }
+
+        @media (max-width: 768px) {
+            :root { --container-padding: 5vw; }
+            section { padding: 80px 0; }
+            .hero-ctas { flex-direction: column; gap: 1rem; }
+            .contact-links { flex-direction: column; gap: 2rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="noise"></div>
+
+    <header class="container">
+        <!-- Minimal Nav if needed, but request said single page without "shouting" -->
+    </header>
+
+    <main>
+        <!-- HERO -->
+        <section id="hero" class="hero visible">
+            <!-- Background Video Placeholder -->
+            <div class="hero-video">
+                <div class="video-overlay"></div>
+                <!-- Using a high-end royalty-free background visual placeholder -->
+                <div class="video-placeholder"></div>
+            </div>
+            
+            <div class="hero-bg"></div>
+            <div class="container">
+                <p class="hero-title" data-scramble>AI Strategist · UX/UI Designer · Digital Expert</p>
+                <h1 class="hero-name">Olivia <br>Vanderbilt.</h1>
+                <p class="hero-statement">
+                    Bridging the gap between cognitive intelligence, behavioral design, and growth strategy to build digital experiences that resonate.
+                </p>
+                <div class="hero-ctas">
+                    <a href="#projects" class="btn btn-primary magnetic">View My Work</a>
+                    <a href="#contact" class="btn btn-outline magnetic">Get in Touch</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- (Rest of sections remain same but with enhanced animations) -->
+
+        <!-- EXPERTISE -->
+        <section id="expertise" class="container">
+            <div class="section-header">
+                <span class="section-number">01 //</span>
+                <h2 class="section-title">Core Expertise</h2>
+            </div>
+            <div class="expertise-grid">
+                <div class="expertise-card">
+                    <span class="card-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 3v2m0 14v2M3 12h2m14 0h2m-2.5-6.5l-1.5 1.5m-9 9l-1.5 1.5m1.5-12l1.5 1.5m9 9l1.5 1.5"/></svg>
+                    </span>
+                    <h3 class="card-title">AI & Machine Learning</h3>
+                    <ul class="card-list">
+                        <li>Prompt engineering & AI workflow design</li>
+                        <li>Building AI-powered tools and applications</li>
+                        <li>Understanding of LLMs, supervised learning</li>
+                        <li>AI use cases for business and education</li>
+                    </ul>
+                </div>
+                <div class="expertise-card">
+                    <span class="card-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                    </span>
+                    <h3 class="card-title">UX/UI Design</h3>
+                    <ul class="card-list">
+                        <li>User research & persona development</li>
+                        <li>Wireframing, prototyping & usability testing</li>
+                        <li>Design systems & component libraries</li>
+                        <li>Human-centered design principles</li>
+                    </ul>
+                </div>
+                <div class="expertise-card">
+                    <span class="card-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+                    </span>
+                    <h3 class="card-title">Digital Marketing</h3>
+                    <ul class="card-list">
+                        <li>SEO, SEM, and content strategy</li>
+                        <li>Marketing automation & funnel design</li>
+                        <li>Data analytics & performance</li>
+                        <li>Social media & growth strategy</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- PROJECTS -->
+        <section id="projects" class="container">
+            <div class="section-header">
+                <span class="section-number">02 //</span>
+                <h2 class="section-title">Selected Work</h2>
+            </div>
+            <div class="project-grid">
+                <div class="project-card large">
+                    <div class="project-thumb thumb-ai">
+                        <div class="thumb-overlay">
+                            <p>A deep-learning approach to optimizing supply chain logistics using custom LLM agents.</p>
+                        </div>
+                    </div>
+                    <h3 class="project-name">NeuralStream</h3>
+                    <p class="project-desc">AI-powered logistics optimization platform.</p>
+                    <div class="project-tags">
+                        <span class="tag">AI</span>
+                        <span class="tag">ML</span>
+                    </div>
+                </div>
+                <div class="project-card small">
+                    <div class="project-thumb thumb-ux">
+                        <div class="thumb-overlay">
+                            <p>Redesigning the financial dashboard for a next-gen fintech application.</p>
+                        </div>
+                    </div>
+                    <h3 class="project-name">Ethos Pay</h3>
+                    <p class="project-desc">Minimalist fintech interface.</p>
+                    <div class="project-tags">
+                        <span class="tag">UX/UI</span>
+                        <span class="tag">Design System</span>
+                    </div>
+                </div>
+                <div class="project-card small">
+                    <div class="project-thumb thumb-marketing">
+                        <div class="thumb-overlay">
+                            <p>Scaling a SaaS product from zero to 100k users in 6 months using data-driven funnels.</p>
+                        </div>
+                    </div>
+                    <h3 class="project-name">GrowthEngine</h3>
+                    <p class="project-desc">Growth strategy and automation.</p>
+                    <div class="project-tags">
+                        <span class="tag">Marketing</span>
+                        <span class="tag">Automation</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ABOUT -->
+        <section id="about" class="container">
+            <div class="section-header">
+                <span class="section-number">03 //</span>
+                <h2 class="section-title">About Me</h2>
+            </div>
+            <div class="about-content">
+                <div class="about-visual">
+                    <div class="avatar-abstract">
+                        <div class="avatar-circle"></div>
+                    </div>
+                </div>
+                <div>
+                    <p class="bio-text">
+                        I am a transdisciplinary practitioner who thrives in the intersection of data, human behavior, and visual communication. With over a decade of experience, I help organizations navigate the complex landscape of digital transformation, ensuring that technology serves people, and design drives results.
+                    </p>
+                    <div class="tools-list">
+                        <span class="tool-pill">Claude</span>
+                        <span class="tool-pill">Figma</span>
+                        <span class="tool-pill">GA4</span>
+                        <span class="tool-pill">Python</span>
+                        <span class="tool-pill">Notion</span>
+                        <span class="tool-pill">Webflow</span>
+                        <span class="tool-pill">TensorFlow</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CONTACT -->
+        <section id="contact" class="container">
+            <div class="section-header">
+                <span class="section-number">04 //</span>
+                <h2 class="section-title">Let's Connect</h2>
+            </div>
+            <p class="contact-invitation">
+                Currently open to select partnerships, advisory roles, and high-impact projects.
+            </p>
+            <div class="contact-links">
+                <a href="mailto:hello@olivia.dev" class="contact-link">EMAIL</a>
+                <a href="#" class="contact-link">LINKEDIN</a>
+                <a href="#" class="contact-link">DOWNLOAD CV</a>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>© 2026 Olivia Vanderbilt. Designed for the future.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Text Scramble Effect
+        class TextScramble {
+            constructor(el) {
+                this.el = el;
+                this.chars = '!<>-_\\/[]{}—=+*^?#________';
+                this.update = this.update.bind(this);
+            }
+            setText(newText) {
+                const oldText = this.el.innerText;
+                const length = Math.max(oldText.length, newText.length);
+                const promise = new Promise((resolve) => (this.resolve = resolve));
+                this.queue = [];
+                for (let i = 0; i < length; i++) {
+                    const from = oldText[i] || '';
+                    const to = newText[i] || '';
+                    const start = Math.floor(Math.random() * 40);
+                    const end = start + Math.floor(Math.random() * 40);
+                    this.queue.push({ from, to, start, end });
+                }
+                cancelAnimationFrame(this.frameRequest);
+                this.frame = 0;
+                this.update();
+                return promise;
+            }
+            update() {
+                let output = '';
+                let complete = 0;
+                for (let i = 0, n = this.queue.length; i < n; i++) {
+                    let { from, to, start, end, char } = this.queue[i];
+                    if (this.frame >= end) {
+                        complete++;
+                        output += to;
+                    } else if (this.frame >= start) {
+                        if (!char || Math.random() < 0.28) {
+                            char = this.randomChar();
+                            this.queue[i].char = char;
+                        }
+                        output += `<span class="dud">${char}</span>`;
+                    } else {
+                        output += from;
+                    }
+                }
+                this.el.innerHTML = output;
+                if (complete === this.queue.length) {
+                    this.resolve();
+                } else {
+                    this.frameRequest = requestAnimationFrame(this.update);
+                    this.frame++;
+                }
+            }
+            randomChar() {
+                return this.chars[Math.floor(Math.random() * this.chars.length)];
+            }
+        }
+
+        // Magnetic Buttons
+        const magnets = document.querySelectorAll('.magnetic');
+        magnets.forEach((magnet) => {
+            magnet.addEventListener('mousemove', (e) => {
+                const bounding = magnet.getBoundingClientRect();
+                const x = (e.clientX - bounding.left) - (bounding.width / 2);
+                const y = (e.clientY - bounding.top) - (bounding.height / 2);
+                magnet.style.transform = `translate(${x * 0.3}px, ${y * 0.5}px)`;
+            });
+            magnet.addEventListener('mouseleave', () => {
+                magnet.style.transform = 'translate(0px, 0px)';
+            });
+        });
+
+        // Initialization
+        window.addEventListener('DOMContentLoaded', () => {
+            // Scramble
+            const scrambleEl = document.querySelector('[data-scramble]');
+            const fx = new TextScramble(scrambleEl);
+            fx.setText(scrambleEl.innerText);
+
+            // Staggered Hero Load
+            const heroElements = document.querySelectorAll('.hero-name, .hero-statement, .hero-ctas');
+            heroElements.forEach((el, index) => {
+                setTimeout(() => {
+                    el.style.opacity = '1';
+                    el.style.transform = 'translateY(0)';
+                }, 400 + (200 * index));
+            });
+        });
+
+        // Scroll Reveal Animation
+        const observerOptions = {
+            threshold: 0.15,
+            rootMargin: '0px 0px -80px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('section:not(#hero)').forEach(section => {
+            observer.observe(section);
+        });
+
+        // Smooth Scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+                const target = document.querySelector(targetId);
+                if (target) {
+                    window.scrollTo({
+                        top: target.offsetTop,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        // Thumbnail Parallax
+        document.querySelectorAll('.project-card').forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const { left, top, width, height } = card.getBoundingClientRect();
+                const x = (e.clientX - left) / width;
+                const y = (e.clientY - top) / height;
+                const moveX = (x - 0.5) * 15;
+                const moveY = (y - 0.5) * 15;
+                card.querySelector('.project-thumb').style.transform = `scale(1.05) translate(${moveX}px, ${moveY}px)`;
+            });
+            card.addEventListener('mouseleave', () => {
+                card.querySelector('.project-thumb').style.transform = `scale(1) translate(0, 0)`;
+            });
+        });
+    </script>
+</body>
+</html>
